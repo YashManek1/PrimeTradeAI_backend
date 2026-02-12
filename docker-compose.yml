@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: ${REDIS_URL}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: /api/v1 # Use relative path for proxying or direct container access
+    ports:
+      - "3001:80" # Map host port 3001 to container port 80 (nginx default)
+    depends_on:
+      - api
+    restart: unless-stopped
